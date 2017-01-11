@@ -1,11 +1,11 @@
-﻿// ==UserScript==
+// ==UserScript==
 // @name        Animeforce premium
 // @description Permette di godere in maniera ottimale della piattaforma Animeforce, skippando alcune pagine intermedie e avendo il download diretto delle puntate
 // @author Maxeo | maxeo.it
 // @license https://creativecommons.org/licenses/by-sa/4.0/
 // @include     http://www.animeforce.org/*
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
-// @version     1.6.1
+// @version     1.6.2
 // @grant       none
 // @namespace https://greasyfork.org/users/88678
 // @icon           https://www.maxeo.net/imgs/icon/greasyfork/animeforcePremium.png
@@ -29,7 +29,7 @@ this.open = function () {
 }
 parent.open = function () {
   return;
-}//Verifico se l'url è valido
+} //Verifico se l'url è valido
 
 function isValidURL(url) {
   var RegExp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
@@ -108,7 +108,7 @@ $(document).ready(function () {
     elem = $('#sidebar .widget-unwrapped').html();
     $('#sidebar .widget-unwrapped').remove();
     $('#randompostswiththumbnails_widget-6').parent().append(elem);
-    $('#footer-wrapper, #subfooter-wrapper').remove() //
+    //
     /* Menu a scomparsa */
     var hiddenableBox = $('.woocommerce div.container div.row div.span12 div#featured-bar-wrapper.solo div#featured-bar-shadow div.row div.span12').parent().parent().parent().parent();
     var hiddenableBoxH = 400;
@@ -169,7 +169,12 @@ $(document).ready(function () {
       })
     }
     recurseUrl();
-  } //funzioni on document ready
+  }  //
+  //Pagine Generali (tutte) non dello streaming
+
+  if ($('#footer-wrapper, #subfooter-wrapper').length) {
+    $('#footer-wrapper, #subfooter-wrapper').remove();
+  }  //funzioni on document ready
 
   function operazioniTitolo() {
     if (titolto_puntata != undefined) {

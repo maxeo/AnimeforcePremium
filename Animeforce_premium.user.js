@@ -75,6 +75,11 @@ function AFP_index() {
     getPageType: function () {
       return this.pagetype;
     },
+    executeFunctionality: function (funct_name) {
+      for (var index in arguments) {
+        this.functionalities[arguments[index]]();
+      }
+    },
     loadFunctionalities: function () {
       //funzionalità globali
       this.functionalities.decreaseAD();
@@ -83,31 +88,31 @@ function AFP_index() {
       //funzionalità specifiche
       switch (this.getPageType()) {
         case 'home':
-          this.functionalities.addPremiumMenu();
+          this.executeFunctionality('addPremiumMenu');
           break;
         case 'premium-menu':
-          this.functionalities.addPremiumMenu();
+          this.executeFunctionality('addPremiumMenu');
           break;
         case 'episode-list':
-          this.functionalities.addPremiumMenu();
+          this.executeFunctionality('addPremiumMenu');
           break;
         case 'episode-preview':
-          this.functionalities.addPremiumMenu();
+          this.executeFunctionality('addPremiumMenu');
           break;
         case 'lista-anime':
-          this.functionalities.addPremiumMenu();
+          this.executeFunctionality('addPremiumMenu');
           break;
         case 'archive':
-          this.functionalities.addPremiumMenu();
+          this.executeFunctionality('addPremiumMenu');
           break;
         case 'hentai':
-          this.functionalities.addPremiumMenu();
+          this.executeFunctionality('addPremiumMenu');
           break;
         case 'error404':
-          this.functionalities.addPremiumMenu();
+          this.executeFunctionality('addPremiumMenu');
           break;
         case 'streaming-page':
-          this.functionalities.dontBlocADblock();
+          this.executeFunctionality('dontBlocADblock');
           break;
         default:
 
@@ -151,6 +156,7 @@ function AFP_index() {
 
       }
     }
+
   };
   AFPremium.loadPageType();
   AFPremium.loadFunctionalities();

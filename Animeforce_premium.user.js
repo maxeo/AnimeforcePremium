@@ -144,6 +144,12 @@ function AFP_index() {
             }
           }, 300)
 
+        } else {
+          $('[style^="position: fixed; top: 0px; bottom: 0px; left: 0px; right: 0px; z-index: 2147483647;"]')
+                  .attr('style', "position:fixed;right:200vw")
+                  .css('display', 'none')
+          $('.tp-loader').remove()
+          $('#menu-menu-2 #menu-item-21035 .sub-menu').css('display', 'block').css('visibility', 'visible')
         }
       },
       dontBlocADblock: function () {

@@ -8,7 +8,7 @@
 // @homepageURL    https://greasyfork.org/it/scripts/25912-animeforce-premium
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
 // @require https://greasyfork.org/scripts/26454-jquery-cookie/code/jQuery%20Cookie.user.js
-// @version     2.1.0
+// @version     2.1.1
 // @grant       none
 // @namespace https://greasyfork.org/users/88678
 // @icon           https://www.maxeo.net/imgs/icon/greasyfork/animeforcePremium.png
@@ -212,7 +212,7 @@ function AFP_index() {
         })
 
         $('#searchform input[type="text"]').on('keyup', function () {
-          if ($(this).val().length > 3) {
+          if ($(this).val().length > 2) {
             var positionBox = $('#searchform input').offset()
             var input_ricerca = $('#searchform input')
             var listaAnime = AFPremium.skeletron.rightcolumn.animeList;
@@ -239,9 +239,13 @@ function AFP_index() {
 
           }
         })
-        $('#searchform input[type="text"]').on('blur', function () {
-          $('#box_di_ricerca').remove();
+
+        $('body').on('click', 'div', function () {
+          if (!$(this).hasClass('box_di_ricerca')) {
+            $('#box_di_ricerca').remove();
+          }
         })
+        
 
       }
     }

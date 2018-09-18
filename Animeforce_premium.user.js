@@ -94,7 +94,7 @@ function AFP_index() {
           this.executeFunctionality('addPremiumMenu');
           break;
         case 'episode-list':
-          this.executeFunctionality('addPremiumMenu', 'removeAdflyInPageAnime');
+          this.executeFunctionality('addPremiumMenu', 'removeAdflyInPageAnime', 'animeDownloadIstant');
           break;
         case 'episode-preview':
           this.executeFunctionality('addPremiumMenu');
@@ -204,6 +204,29 @@ function AFP_index() {
             $('#menu-menu-2 .sub-menu').css('display', 'none')
           })
         }
+      },
+      animeDownloadIstant: function () {
+        $('body').append('<div class="w8-afp-download" style="position: fixed;right: 0;top: 0;background: rgba(0, 120, 255, 0.63);padding: 18px;z-index: 3000;color: #FFF;font-size: 20px;text-align: right;font-family: Verdana;">Analizzo la pagina per il download diretto.<br>Attendere...</div>')
+        if ($('img[src="/DDL/download.png"]').length) {
+          setTimeout(
+                  function () {
+                    var url = 'https:' + $('img[src="/DDL/download.png"]').eq(0).parent().attr('href');
+                    $.get('//url-redirect.maxeo.net/?url=' + encodeURI(url), function (data) {
+                      var filecode = url.match(/\?file=(.*)/)[1];
+                      var longData = data.match(/file=(.*)/)[1].substr();
+                      var basedata = longData.substr(0, longData.indexOf(filecode))
+                      $('img[src="/DDL/download.png"]').each(function () {
+                        url = $(this).parent().attr('href');
+                        var filecode = url.match(/\?file=(.*)/)[1];
+                        var downloadLink = 'http://' + basedata + filecode;
+                        $(this).parent().attr('href', downloadLink)
+                      })
+                      $('.w8-afp-download').remove();
+                    });
+                  }
+          , 3000)
+        }
+
       },
       removeAdflyInPageAnime: function () {
         $.get('#').done(function (data) {

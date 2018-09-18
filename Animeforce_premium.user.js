@@ -8,7 +8,7 @@
 // @homepageURL    https://greasyfork.org/it/scripts/25912-animeforce-premium
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
 // @require https://greasyfork.org/scripts/26454-jquery-cookie/code/jQuery%20Cookie.user.js
-// @version     1.11.7
+// @version     2.0.0
 // @grant       none
 // @namespace https://greasyfork.org/users/88678
 // @icon           https://www.maxeo.net/imgs/icon/greasyfork/animeforcePremium.png
@@ -82,7 +82,8 @@ function AFP_index() {
     },
     loadFunctionalities: function () {
       //funzionalità globali
-      this.functionalities.decreaseAD();
+      this.executeFunctionality('decreaseAD', 'miglioraUtilizzoMenu');
+
 
 
       //funzionalità specifiche
@@ -149,7 +150,6 @@ function AFP_index() {
                   .attr('style', "position:fixed;right:200vw")
                   .css('display', 'none')
           $('.tp-loader').remove()
-          $('#menu-menu-2 #menu-item-21035 .sub-menu').css('display', 'block').css('visibility', 'visible')
         }
       },
       dontBlocADblock: function () {
@@ -160,6 +160,17 @@ function AFP_index() {
           }
         }, 300);
 
+      },
+      miglioraUtilizzoMenu: function () {
+        if (this.parent().getPageType() != 'streaming-page') {
+          $('#menu-menu-2 .sub-menu').css('display', 'none')
+          $('#menu-menu-2').on('mouseover', function () {
+            $('#menu-menu-2 #menu-item-21035 .sub-menu').css('display', 'block').css('visibility', 'visible')
+          })
+          $('#menu-menu-2').on('mouseout', function () {
+            $('#menu-menu-2 .sub-menu').css('display', 'none')
+          })
+        }
       }
     }
 

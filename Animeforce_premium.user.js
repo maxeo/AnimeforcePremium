@@ -8,7 +8,7 @@
 // @homepageURL    https://greasyfork.org/it/scripts/25912-animeforce-premium
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
 // @require https://greasyfork.org/scripts/26454-jquery-cookie/code/jQuery%20Cookie.user.js
-// @version     2.0.0
+// @version     2.0.2
 // @grant       none
 // @namespace https://greasyfork.org/users/88678
 // @icon           https://www.maxeo.net/imgs/icon/greasyfork/animeforcePremium.png
@@ -150,6 +150,7 @@ function AFP_index() {
                   .attr('style', "position:fixed;right:200vw")
                   .css('display', 'none')
           $('.tp-loader').remove()
+          $('.widget-unwrapped').eq(-1).remove()
         }
       },
       dontBlocADblock: function () {

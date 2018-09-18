@@ -8,7 +8,7 @@
 // @homepageURL    https://greasyfork.org/it/scripts/25912-animeforce-premium
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
 // @require https://greasyfork.org/scripts/26454-jquery-cookie/code/jQuery%20Cookie.user.js
-// @version     2.1.1
+// @version     2.1.3
 // @grant       none
 // @namespace https://greasyfork.org/users/88678
 // @icon           https://www.maxeo.net/imgs/icon/greasyfork/animeforcePremium.png
@@ -94,7 +94,7 @@ function AFP_index() {
           this.executeFunctionality('addPremiumMenu');
           break;
         case 'episode-list':
-          this.executeFunctionality('addPremiumMenu');
+          this.executeFunctionality('addPremiumMenu', 'removeAdflyInPageAnime');
           break;
         case 'episode-preview':
           this.executeFunctionality('addPremiumMenu');
@@ -151,7 +151,17 @@ function AFP_index() {
                   .attr('style', "position:fixed;right:200vw")
                   .css('display', 'none')
           $('.tp-loader').remove()
-          $('.widget-unwrapped').eq(-1).remove()
+          $('#menu-menu-2').on('mouseover', function () {
+            $('#menu-menu-2 #menu-item-21035 .sub-menu')
+                    .css('display', 'block')
+                    .css('visibility', 'visible')
+          })
+          $('#menu-menu-2 a').each(function () {
+            $(this).attr('href', $(this).attr('href').replace('//adf.ly/16031519', ''))
+          })
+          $('.widget-unwrapped iframe').parent().addClass('fb-container').removeClass('widget-unwrapped')
+          $('.widget-unwrapped').remove()
+
         }
       },
       dontBlocADblock: function () {
@@ -194,6 +204,11 @@ function AFP_index() {
             $('#menu-menu-2 .sub-menu').css('display', 'none')
           })
         }
+      },
+      removeAdflyInPageAnime: function () {
+        $.get('#').done(function (data) {
+          $('table[style="width: 100%;"]').html(data.match(/\<table\ style\=\"width\:\ 100\%\;\"\>\n(.*\n)*\<\/tbody\>\n<\/table>/)[0])
+        })
       },
       premiumSearchHomePage: function () {
         AFPremium.skeletron.rightcolumn.animeList = [];
@@ -245,7 +260,7 @@ function AFP_index() {
             $('#box_di_ricerca').remove();
           }
         })
-        
+
 
       }
     }

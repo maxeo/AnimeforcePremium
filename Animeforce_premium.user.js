@@ -13,6 +13,8 @@
 // @namespace https://greasyfork.org/users/88678
 // @icon           https://www.maxeo.net/imgs/icon/greasyfork/animeforcePremium.png
 // ==/UserScript==
+
+var cusomChechbox = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;width: 30px;border: 2px solid #000;" xml:space="preserve"><path style="fill:none;stroke:#000000;stroke-dashoffset: 73px;stroke-width: 6px;transition: 1s cubic-bezier(.63,.41,.04,.61);" d="M14.8,58.5c0,0,13.9,23.7,21.8,28.9c7.9,5.2,48.6-75.1,48.6-75.1"></path></svg>'
 function AFP_index() {
   var $ = jQuery;
   var AFPremium = {
@@ -26,32 +28,39 @@ function AFP_index() {
         },
         animeDownloadIstant: {
           enable: true,
+          title: "Download istantaneo",
           description: "Aggiunge il download istantaneo nella lista degli episodi dell'anime",
         },
         decreaseAD: {
           enable: true,
-          description: "Riduce la pubblicità nel sito",
+          title: "Riduci la pubblicità",
+          description: "Riduce la pubblicità nel sito. Senza che sia necessario l'utilizzo di AdBlock o simili.",
         },
         dontBlocADblock: {
           enable: true,
-          description: 'Su alcune pagine Adblock non verrà "bloccato"',
+          title: "Non bloccare AdBlock",
+          description: 'Su alcune pagine AdBlock non verrà "bloccato"',
         },
         miglioraUtilizzoMenu: {
           enable: true,
+          title: "Menu percettivo",
           description: 'Il menu principale apparirà ogni volta che si passa il mouse sulla barra dei menu',
         },
         premiumSearchHomePage: {
           enable: true,
+          title: "Ricerca Anime in homepage",
           description: 'Nella homepage sarà possibile utilizzare il form di ricerca per cercare direttamente dalla lista degli episodi',
           warning: "Necessario per Altro plugin"
         },
         removeAdflyInPageAnime: {
           enable: true,
+          title: "Riduci AdFly",
           description: 'Nella pagina della lista degli episodi non sarà presente il link di Adfly per gli episodi',
         },
         searchInList: {
           enable: true,
-          description: 'Nella lista episodi e anime in corso aggiunge una ricerca testuale',
+          title: "Ricerca aggiuntiva",
+          description: 'In "lista episodi" e "Anime in corso" aggiunge una ricerca testuale',
         },
       },
 
@@ -319,6 +328,12 @@ function AFP_index() {
         searchBox.on('submit keyup', function (e) {
           e.preventDefault()
         })
+        var docFunction = this.parent().menu.functions;
+        var formAFP = "";
+        for (var funxtion_name in docFunction) {
+          formAFP += '<label style="font-size: 18px;"><input style="display:none" type="checkbox"' + (docFunction[funxtion_name].enable ? ' checked=""' : '') + ' name="' + funxtion_name + '">'+cusomChechbox+' ' + docFunction[funxtion_name].title + '</label><br>';
+        }
+        contentPremium.html(formAFP);
       },
     }
 
@@ -326,6 +341,8 @@ function AFP_index() {
   AFPremium.loadPageType();
   AFPremium.loadFunctionalities();
 
+$('body').append('<style>input:checked + svg > path {stroke-dasharray: 200,200;}input + svg > path {stroke-dasharray: 70,200;}</style>')
 }
 
 AFP_index(); //$('#featured-wrapper #featured img.wp-post-image')
+

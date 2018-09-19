@@ -8,7 +8,7 @@
 // @homepageURL    https://greasyfork.org/it/scripts/25912-animeforce-premium
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
 // @require https://greasyfork.org/scripts/26454-jquery-cookie/code/jQuery%20Cookie.user.js
-// @version     2.2.0
+// @version     2.2.1
 // @grant       none
 // @namespace https://greasyfork.org/users/88678
 // @icon           https://www.maxeo.net/imgs/icon/greasyfork/animeforcePremium.png
@@ -16,29 +16,47 @@
 function AFP_index() {
   var $ = jQuery;
   var AFPremium = {
-    skeletron: {
-      head: {
-        enable: true
+    menu: {
+      functions: {
+        addPremiumMenu: {
+          enable: true,
+          title: "Aggiungi menu premium",
+          description: "Aggiunge il menu premium nelle pagine non di streaming",
+          warning: "Disabilitando questa voce sarà necessario andare su https://ww1.animeforce.org/premium per per modificare le impostazioni"
+        },
+        animeDownloadIstant: {
+          enable: true,
+          description: "Aggiunge il download istantaneo nella lista degli episodi dell'anime",
+        },
+        decreaseAD: {
+          enable: true,
+          description: "Riduce la pubblicità nel sito",
+        },
+        dontBlocADblock: {
+          enable: true,
+          description: 'Su alcune pagine Adblock non verrà "bloccato"',
+        },
+        miglioraUtilizzoMenu: {
+          enable: true,
+          description: 'Il menu principale apparirà ogni volta che si passa il mouse sulla barra dei menu',
+        },
+        premiumSearchHomePage: {
+          enable: true,
+          description: 'Nella homepage sarà possibile utilizzare il form di ricerca per cercare direttamente dalla lista degli episodi',
+          warning: "Necessario per Altro plugin"
+        },
+        removeAdflyInPageAnime: {
+          enable: true,
+          description: 'Nella pagina della lista degli episodi non sarà presente il link di Adfly per gli episodi',
+        },
+        searchInList: {
+          enable: true,
+          description: 'Nella lista episodi e anime in corso aggiunge una ricerca testuale',
+        },
       },
-      topheader: {
-        enable: true
-      },
-      header: {
-        enable: true
-      },
-      maincontent: {
-        enable: true
-      },
-      leftcolumn: {
-        enable: true
-      },
-      rightcolumn: {
-        enable: true
-      },
-      footer: {
-        enable: true
-      }
+
     },
+    cvar: {},
     pagetype: undefined,
     logs: 1,
     loadPageType: function () {
@@ -91,6 +109,7 @@ function AFP_index() {
           this.executeFunctionality('addPremiumMenu', 'premiumSearchHomePage');
           break;
         case 'premium-menu':
+          this.functionalities.premiumMenu();
           this.executeFunctionality('addPremiumMenu');
           break;
         case 'episode-list':
@@ -234,11 +253,11 @@ function AFP_index() {
         })
       },
       premiumSearchHomePage: function () {
-        AFPremium.skeletron.rightcolumn.animeList = [];
+        var animeList = this.parent().cvar.animeList;
         $.get('https://ww1.animeforce.org/lista-anime/').done(function (data) {
           var bxcontainer = data.match(/(\<div\ class\=\"the\-content\"\>.*(.*\n)*\<script\ type=\"text\/javascript\"\>)+/g) [0]
           bxcontainer = bxcontainer.match(/\<li\>\<strong\>\<a\ href=.*\<\/a\>/g)
-          var animeList = [
+          animeList = [
           ];
           for (var index in bxcontainer) {
             var link = bxcontainer[index].match(/.*">/)[0].match(/\".*\//)[0].replace(/\"/g, '')
@@ -246,14 +265,13 @@ function AFP_index() {
 
             animeList.push({'name': nameAnime, 'link': link})
           }
-          AFPremium.skeletron.rightcolumn.animeList = animeList;
+          this.parent().cvar.animeList = animeList;
         })
 
         $('#searchform input[type="text"]').on('keyup', function () {
           if ($(this).val().length > 2) {
             var positionBox = $('#searchform input').offset()
             var input_ricerca = $('#searchform input')
-            var listaAnime = AFPremium.skeletron.rightcolumn.animeList;
             var listaRisultati = [];
             if (!$('#box_di_ricerca').length) {
               $('body').append('<div class="box-di-ricerca" id="box_di_ricerca"></div>')
@@ -266,9 +284,9 @@ function AFP_index() {
                       .css('z-index', 10000);
             }
             $('#box_di_ricerca').html('<ul style="list-style: none;margin: 0;"></ul>');
-            for (var index in listaAnime) {
-              if (listaAnime[index].name.toUpperCase().indexOf($(this).val().toUpperCase()) + 1 > 0) {
-                listaRisultati.push(listaAnime[index]);
+            for (var index in animeList) {
+              if (animeList[index].name.toUpperCase().indexOf($(this).val().toUpperCase()) + 1 > 0) {
+                listaRisultati.push(animeList[index]);
               }
             }
             for (var index in listaRisultati) {
@@ -285,7 +303,23 @@ function AFP_index() {
         })
 
 
-      }
+      },
+      premiumMenu: function () {
+        var slug = $('.sortbar-title')
+        var h1 = $('.main-content h1')
+        var mainContent = $('.main-content')
+        var searchBox = $('.form-search');
+        if (!$('.content-premium').length) {
+          mainContent.append('<div class="content-premium"></div>')
+        }
+        var contentPremium = $('.content-premium');
+        slug.html('Menu Premium')
+        h1.html('Impostazioni Premium')
+        searchBox.find('input[type="text"]').attr('placeholder', 'Cerca tra le impostazioni')
+        searchBox.on('submit keyup', function (e) {
+          e.preventDefault()
+        })
+      },
     }
 
   };

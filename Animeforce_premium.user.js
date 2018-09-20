@@ -14,7 +14,7 @@
 // @icon           https://www.maxeo.net/imgs/icon/greasyfork/animeforcePremium.png
 // ==/UserScript==
 
-var cusomChechbox = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;width: 30px;border: 2px solid #000;" xml:space="preserve"><path style="fill:none;stroke:#000000;stroke-dashoffset: 73px;stroke-width: 6px;transition: 1s cubic-bezier(.63,.41,.04,.61);" d="M14.8,58.5c0,0,13.9,23.7,21.8,28.9c7.9,5.2,48.6-75.1,48.6-75.1"></path></svg>'
+var cusomChechbox = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;width: 30px;height: 30px;border: 2px solid #000;" xml:space="preserve"><path style="fill:none;stroke:#000000;stroke-dashoffset: 73px;stroke-width: 6px;transition: 1s cubic-bezier(.63,.41,.04,.61);" d="M14.8,58.5c0,0,13.9,23.7,21.8,28.9c7.9,5.2,48.6-75.1,48.6-75.1"></path></svg>'
 function AFP_index() {
   var $ = jQuery;
   var AFPremium = {
@@ -108,6 +108,11 @@ function AFP_index() {
       }
     },
     loadFunctionalities: function () {
+      //Eseguo dipendenze
+      for (var index in this.requiredFuntions) {
+        this.requiredFuntions[index]();
+      }
+
       //funzionalità globali
       this.executeFunctionality('decreaseAD', 'miglioraUtilizzoMenu');
 
@@ -202,10 +207,6 @@ function AFP_index() {
 
       },
       searchInList: function () {
-        jQuery.expr[':'].icontains = function (a, i, m) {
-          return jQuery(a).text().toUpperCase()
-                  .indexOf(m[3].toUpperCase()) >= 0;
-        };
         var src_input = '<input id="filtro" type="text" placeholder="Scrivi qui per cercare tra gli anime" style="width: 100%">'
         $('.the-content p').eq(0).append(src_input);
         $('#filtro').on('keyup', function () {
@@ -327,21 +328,35 @@ function AFP_index() {
         searchBox.find('input[type="text"]').attr('placeholder', 'Cerca tra le impostazioni')
         searchBox.on('submit keyup', function (e) {
           e.preventDefault()
+          $('.content-premium > label').each(function () {
+            if ($(this).is(':icontains(\'' + searchBox.find('input[type="text"]').val() + '\')'))
+              $(this).css('display', 'flex');
+            else
+              $(this).css('display', 'none');
+          });
         })
         var docFunction = this.parent().menu.functions;
         var formAFP = "";
         for (var funxtion_name in docFunction) {
-          formAFP += '<label style="font-size: 18px;"><input style="display:none" type="checkbox"' + (docFunction[funxtion_name].enable ? ' checked=""' : '') + ' name="' + funxtion_name + '">'+cusomChechbox+' ' + docFunction[funxtion_name].title + '</label><br>';
+          formAFP += '<label style="display: flex"><input style="display:none" type="checkbox"' + (docFunction[funxtion_name].enable ? ' checked=""' : '') + ' name="' + funxtion_name + '">' + cusomChechbox + ' <p style="font-size: 18px;margin: 7px;padding: 0;">' + docFunction[funxtion_name].title + '</p></label>';
         }
         contentPremium.html(formAFP);
       },
+    },
+    requiredFuntions: {
+      icontainsJquery: function () {
+        jQuery.expr[':'].icontains = function (a, i, m) {
+          return jQuery(a).text().toUpperCase()
+                  .indexOf(m[3].toUpperCase()) >= 0;
+        };
+      }
     }
 
   };
   AFPremium.loadPageType();
   AFPremium.loadFunctionalities();
 
-$('body').append('<style>input:checked + svg > path {stroke-dasharray: 200,200;}input + svg > path {stroke-dasharray: 70,200;}</style>')
+  $('body').append('<style>input:checked + svg > path {stroke-dasharray: 200,200;}input + svg > path {stroke-dasharray: 70,200;}</style>')
 }
 
 AFP_index(); //$('#featured-wrapper #featured img.wp-post-image')

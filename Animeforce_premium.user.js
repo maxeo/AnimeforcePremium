@@ -107,12 +107,16 @@ function AFP_index() {
       return this.pagetype;
     },
     executeFunctionality: function (funct_name) {
+      var dependenceLoaded = [];
       for (var index in arguments) {
         this.fComponents.loadAnimeList();
         if (this.menu.functions[arguments[index]].frequierd != undefined) {
           var requiredF = this.menu.functions[arguments[index]].frequierd;
           for (var subindex in requiredF) {
-            this.fComponents[requiredF[subindex]]();
+            if (dependenceLoaded.indexOf(requiredF[subindex]) + 1) {
+              dependenceLoaded.push(requiredF[subindex])
+              this.fComponents[requiredF[subindex]]();
+            }
           }
         }
         this.functionalities[arguments[index]]();

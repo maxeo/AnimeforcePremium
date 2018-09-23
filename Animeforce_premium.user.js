@@ -7,6 +7,7 @@
 // @include     https://*.animeforce.org/*
 // @homepageURL    https://greasyfork.org/it/scripts/25912-animeforce-premium
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
+// @require http://getbootstrap.com/2.3.2/assets/js/bootstrap-tooltip.js
 // @require https://greasyfork.org/scripts/26454-jquery-cookie/code/jQuery%20Cookie.user.js
 // @version     2.2.1
 // @grant       none
@@ -14,7 +15,6 @@
 // @icon           https://www.maxeo.net/imgs/icon/greasyfork/animeforcePremium.png
 // ==/UserScript==
 
-var cusomChechbox = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;width: 30px;height: 30px;border: 2px solid #000;" xml:space="preserve"><path style="fill:none;stroke:#000000;stroke-dashoffset: 73px;stroke-width: 6px;transition: 1s cubic-bezier(.63,.41,.04,.61);" d="M14.8,58.5c0,0,13.9,23.7,21.8,28.9c7.9,5.2,48.6-75.1,48.6-75.1"></path></svg>'
 function AFP_index() {
   var $ = jQuery;
   var AFPremium = {
@@ -33,13 +33,13 @@ function AFP_index() {
         },
         decreaseAD: {
           enable: true,
-          title: "Riduci la pubblicità",
+          title: "DecreaseAD",
           description: "Riduce la pubblicità nel sito. Senza che sia necessario l'utilizzo di AdBlock o simili.",
         },
         dontBlocADblock: {
           enable: true,
           title: "Non bloccare AdBlock",
-          description: 'Su alcune pagine AdBlock non verrà "bloccato"',
+          description: "Su alcune pagine AdBlock non verrà 'bloccato'",
         },
         miglioraUtilizzoMenu: {
           enable: true,
@@ -59,13 +59,16 @@ function AFP_index() {
         },
         searchInList: {
           enable: true,
-          title: "Ricerca aggiuntiva",
-          description: 'In "lista episodi" e "Anime in corso" aggiunge una ricerca testuale',
+          title: "Ricerca aggiuntiva nelle liste",
+          description: "In 'lista episodi' e 'Anime in corso' aggiunge una ricerca testuale",
         },
       },
 
     },
     cvar: {},
+    customElements: {
+      afphechbox: '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;width: 30px;height: 30px;border: 2px solid #000;" xml:space="preserve"><path style="fill:none;stroke:#000000;stroke-dashoffset: 73px;stroke-width: 6px;transition: 1s cubic-bezier(.63,.41,.04,.61);" d="M14.8,58.5c0,0,13.9,23.7,21.8,28.9c7.9,5.2,48.6-75.1,48.6-75.1"></path></svg>'
+    },
     pagetype: undefined,
     logs: 1,
     loadPageType: function () {
@@ -73,7 +76,7 @@ function AFP_index() {
         this.setPageType('home')
       } else
       if ($('body').hasClass('error404')) {
-        if (window.location.pathname == '/premium') {
+        if (location.pathname == '/premium') {
           this.setPageType('premium-menu')
         } else {
           this.setPageType('error404')
@@ -86,11 +89,11 @@ function AFP_index() {
         } else {
           this.setPageType('episode-preview')
         }
-      } else if (document.location.pathname == '/lista-anime/' || window.location.pathname == '/lista-anime-in-corso/') {
+      } else if (location.pathname == '/lista-anime/' || location.pathname == '/lista-anime-in-corso/') {
         this.setPageType('lista-anime');
       } else if ($('body').hasClass('archive')) {
         this.setPageType('archive');
-      } else if (document.location.pathname == '/lista-anime-hentai/') {
+      } else if (location.pathname == '/lista-anime-hentai/') {
         this.setPageType('hentai');
       }
 
@@ -157,9 +160,6 @@ function AFP_index() {
       }
     },
     functionalities: {
-      parent: function () {
-        return AFPremium;
-      },
       /*
        * Aggiunge il menu premium alle pagine
        */
@@ -168,7 +168,7 @@ function AFP_index() {
       },
       decreaseAD: function () {
         /***  PAGINA DI STREAMING   ***/
-        if (this.parent().getPageType() == 'streaming-page') {
+        if (AFPremium.getPageType() == 'streaming-page') {
           var disableFunction = setInterval(function () {
             if ($("body > center + *").length) {
               $('footer').remove();
@@ -224,7 +224,7 @@ function AFP_index() {
         });
       },
       miglioraUtilizzoMenu: function () {
-        if (this.parent().getPageType() != 'streaming-page') {
+        if (AFPremium.getPageType() != 'streaming-page') {
           $('#menu-menu-2 .sub-menu').css('display', 'none')
           $('#menu-menu-2').on('mouseover', function () {
             $('#menu-menu-2 #menu-item-21035 .sub-menu').css('display', 'block').css('visibility', 'visible')
@@ -263,7 +263,7 @@ function AFP_index() {
         })
       },
       premiumSearchHomePage: function () {
-        var animeList = this.parent().cvar.animeList;
+        var animeList = AFPremium.cvar.animeList;
         $.get('https://ww1.animeforce.org/lista-anime/').done(function (data) {
           var bxcontainer = data.match(/(\<div\ class\=\"the\-content\"\>.*(.*\n)*\<script\ type=\"text\/javascript\"\>)+/g) [0]
           bxcontainer = bxcontainer.match(/\<li\>\<strong\>\<a\ href=.*\<\/a\>/g)
@@ -271,11 +271,11 @@ function AFP_index() {
           ];
           for (var index in bxcontainer) {
             var link = bxcontainer[index].match(/.*">/)[0].match(/\".*\//)[0].replace(/\"/g, '')
-            var nameAnime = bxcontainer[index].match(/\"\>.*Sub Ita/i)[0].replace(/\"|\/|\>|\</g, '')
+            var nameAnime = bxcontainer[index].match(/\"\>.*Sub Ita/i)[0].replace(/\"|\/|\>|\</g, '').replace(/\ Sub\ Ita/i)
 
             animeList.push({'name': nameAnime, 'link': link})
           }
-          this.parent().cvar.animeList = animeList;
+          AFPremium.cvar.animeList = animeList;
         })
 
         $('#searchform input[type="text"]').on('keyup', function () {
@@ -319,6 +319,9 @@ function AFP_index() {
         var h1 = $('.main-content h1')
         var mainContent = $('.main-content')
         var searchBox = $('.form-search');
+
+        $('body').append('<style>input:checked + svg > path {stroke-dasharray: 200,200;}input + svg > path {stroke-dasharray: 70,200;}</style>')
+
         if (!$('.content-premium').length) {
           mainContent.append('<div class="content-premium"></div>')
         }
@@ -335,28 +338,64 @@ function AFP_index() {
               $(this).css('display', 'none');
           });
         })
-        var docFunction = this.parent().menu.functions;
+        var docFunction = AFPremium.menu.functions;
         var formAFP = "";
         for (var funxtion_name in docFunction) {
-          formAFP += '<label style="display: flex"><input style="display:none" type="checkbox"' + (docFunction[funxtion_name].enable ? ' checked=""' : '') + ' name="' + funxtion_name + '">' + cusomChechbox + ' <p style="font-size: 18px;margin: 7px;padding: 0;">' + docFunction[funxtion_name].title + '</p></label>';
+          var labW = docFunction[funxtion_name].warning == undefined ? '' : 'ATTENZIONE: ' + docFunction[funxtion_name].warning;
+          formAFP += '<label style="display: flex"><input style="display:none" type="checkbox"' + (docFunction[funxtion_name].enable ? ' checked=""' : '') +
+                  ' name="' + funxtion_name + '">' + AFPremium.customElements.afphechbox +
+                  ' <p data-html="true" data-toggle="tooltip" ' +
+                  ' data-title="' + docFunction[funxtion_name].description + '" ' +
+                  ' data-warning="' + labW + '" ' +
+                  ' style="font-size: 18px;margin: 7px;padding: 0;">' +
+                  docFunction[funxtion_name].title +
+                  '</p></label>';
         }
+
         contentPremium.html(formAFP);
+        $('[data-toggle="tooltip"]').each(function () {
+          var dataTooltip = $(this).data('title');
+          if ($(this).data('warning').length) {
+            dataTooltip += '<br><br><span style="background:red">' + $(this).data('warning')+'</span>';
+          }
+          $(this).tooltip({'title': dataTooltip, 'placement': 'top'});
+
+        })
+
       },
     },
+    /*
+     * Funzione necessaria per ricercare in modo incase sensitive
+     * 
+     */
     requiredFuntions: {
       icontainsJquery: function () {
         jQuery.expr[':'].icontains = function (a, i, m) {
           return jQuery(a).text().toUpperCase()
                   .indexOf(m[3].toUpperCase()) >= 0;
         };
+      },
+      /*
+       * Risolve errori interni al sito 
+       * 
+       */
+      jQueryAFfix: function () {
+        jQuery.easing[0] = function () {}
+        jQuery.easing.def = 0;
+        jQuery.timer = 0;
+        (function ($) {
+          $.fn.jflickrfeed = function () {};
+          $.fn.tabs = function () {};
+        })(jQuery);
       }
+
     }
 
   };
   AFPremium.loadPageType();
   AFPremium.loadFunctionalities();
 
-  $('body').append('<style>input:checked + svg > path {stroke-dasharray: 200,200;}input + svg > path {stroke-dasharray: 70,200;}</style>')
+
 }
 
 AFP_index(); //$('#featured-wrapper #featured img.wp-post-image')

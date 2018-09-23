@@ -50,7 +50,8 @@ function AFP_index() {
           enable: true,
           title: "Ricerca Anime in homepage",
           description: 'Nella homepage sarà possibile utilizzare il form di ricerca per cercare direttamente dalla lista degli episodi',
-          warning: "Necessario per Altro plugin"
+          warning: "Necessario per Altro plugin",
+          frequierd: ['loadAnimeList'],
         },
         removeAdflyInPageAnime: {
           enable: true,
@@ -107,6 +108,13 @@ function AFP_index() {
     },
     executeFunctionality: function (funct_name) {
       for (var index in arguments) {
+        this.fComponents.loadAnimeList();
+        if (this.menu.functions[arguments[index]].frequierd != undefined) {
+          var requiredF = this.menu.functions[arguments[index]].frequierd;
+          for (var subindex in requiredF) {
+            this.fComponents[requiredF[subindex]]();
+          }
+        }
         this.functionalities[arguments[index]]();
       }
     },
@@ -152,11 +160,6 @@ function AFP_index() {
           break;
         default:
 
-      }
-    },
-    logAfp: function (data) {
-      if (this.logs) {
-        console.log(data);
       }
     },
     functionalities: {
@@ -264,21 +267,9 @@ function AFP_index() {
       },
       premiumSearchHomePage: function () {
         var animeList = AFPremium.cvar.animeList;
-        $.get('https://ww1.animeforce.org/lista-anime/').done(function (data) {
-          var bxcontainer = data.match(/(\<div\ class\=\"the\-content\"\>.*(.*\n)*\<script\ type=\"text\/javascript\"\>)+/g) [0]
-          bxcontainer = bxcontainer.match(/\<li\>\<strong\>\<a\ href=.*\<\/a\>/g)
-          animeList = [
-          ];
-          for (var index in bxcontainer) {
-            var link = bxcontainer[index].match(/.*">/)[0].match(/\".*\//)[0].replace(/\"/g, '')
-            var nameAnime = bxcontainer[index].match(/\"\>.*Sub Ita/i)[0].replace(/\"|\/|\>|\</g, '').replace(/\ Sub\ Ita/i)
-
-            animeList.push({'name': nameAnime, 'link': link})
-          }
-          AFPremium.cvar.animeList = animeList;
-        })
 
         $('#searchform input[type="text"]').on('keyup', function () {
+          var animeList = AFPremium.cvar.animeList;
           if ($(this).val().length > 2) {
             var positionBox = $('#searchform input').offset()
             var input_ricerca = $('#searchform input')
@@ -340,6 +331,10 @@ function AFP_index() {
         })
         var docFunction = AFPremium.menu.functions;
         var formAFP = "";
+
+
+        /**   Funzionalità da abilitare/disabilitare   **/
+        formAFP += "<h2>Funzionalità</h2>"
         for (var funxtion_name in docFunction) {
           var labW = docFunction[funxtion_name].warning == undefined ? '' : 'ATTENZIONE: ' + docFunction[funxtion_name].warning;
           formAFP += '<label style="display: flex"><input style="display:none" type="checkbox"' + (docFunction[funxtion_name].enable ? ' checked=""' : '') +
@@ -353,16 +348,36 @@ function AFP_index() {
         }
 
         contentPremium.html(formAFP);
+
+
         $('[data-toggle="tooltip"]').each(function () {
           var dataTooltip = $(this).data('title');
           if ($(this).data('warning').length) {
-            dataTooltip += '<br><br><span style="background:red">' + $(this).data('warning')+'</span>';
+            dataTooltip += '<br><br><span style="background:red">' + $(this).data('warning') + '</span>';
           }
           $(this).tooltip({'title': dataTooltip, 'placement': 'top'});
 
         })
 
       },
+    },
+    fComponents: {
+      loadAnimeList: function () {
+        var animeList = AFPremium.cvar.animeList;
+        $.get('https://ww1.animeforce.org/lista-anime/').done(function (data) {
+          var bxcontainer = data.match(/(\<div\ class\=\"the\-content\"\>.*(.*\n)*\<script\ type=\"text\/javascript\"\>)+/g) [0]
+          bxcontainer = bxcontainer.match(/\<li\>\<strong\>\<a\ href=.*\<\/a\>/g)
+          animeList = [
+          ];
+          for (var index in bxcontainer) {
+            var link = bxcontainer[index].match(/.*">/)[0].match(/\".*\//)[0].replace(/\"/g, '')
+            var nameAnime = bxcontainer[index].match(/\"\>.*Sub Ita/i)[0].replace(/\"|\/|\>|\</g, '').replace(/\ Sub\ Ita/i)
+
+            animeList.push({'name': nameAnime, 'link': link})
+          }
+          AFPremium.cvar.animeList = animeList;
+        })
+      }
     },
     /*
      * Funzione necessaria per ricercare in modo incase sensitive
@@ -394,7 +409,7 @@ function AFP_index() {
   };
   AFPremium.loadPageType();
   AFPremium.loadFunctionalities();
-
+  //jQuery.test = AFPremium;
 
 }
 

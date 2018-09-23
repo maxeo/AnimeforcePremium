@@ -199,6 +199,9 @@ function AFP_index() {
           })
           $('.widget-unwrapped iframe').parent().addClass('fb-container').removeClass('widget-unwrapped')
           $('.widget-unwrapped').remove()
+          if (AFPremium.getPageType() == 'episode-list') {
+            $('.code-block.code-block-3').remove();
+          }
 
         }
       },
@@ -451,7 +454,6 @@ function AFP_index() {
     updateSettings: function (functionality, is_active) {
       AFPremium.cvar.settings[functionality] = is_active;
       $.cookie('AFP', JSON.stringify(AFPremium.cvar.settings), {expires: 3650, path: '/'});
-      console.log(AFPremium.cvar.settings[functionality])
     }
 
   };

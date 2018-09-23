@@ -9,7 +9,7 @@
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
 // @require https://greasyfork.org/scripts/372499-bootstrap-tooltip-js-v2-3-2/code/bootstrap-tooltipjs%20v232.js?version=631225
 // @require https://greasyfork.org/scripts/26454-jquery-cookie/code/jQuery%20Cookie.user.js
-// @version     2.4.0
+// @version     2.4.1
 // @grant       none
 // @namespace https://greasyfork.org/users/88678
 // @icon           https://www.maxeo.net/imgs/icon/greasyfork/animeforcePremium.png
@@ -45,6 +45,7 @@ function AFP_index() {
           enable: true,
           title: "Link diretto in HomePage",
           description: "Nella homepage i link agli episodi saranno diretti <br> PS. Pagine secondarie non ancora supportate",
+          dependances: ['loadAnimeList'],
         },
         miglioraUtilizzoMenu: {
           enable: true,
@@ -332,9 +333,32 @@ function AFP_index() {
 
       },
       linkDirettoHomePage: function () {
-        $('.main-loop-inner .panel-wrapper a').each(function () {
-          $(this).attr('href', $(this).attr('href').replace(/episodio(-[0-9]{1,}){1,}-/, ''))
-        })
+        var linkDirettoInt = setTimeout(function () {
+          if (AFPremium.cvar.animeList != undefined) {
+            $('.main-loop-inner .panel-wrapper a').each(function () {
+              var search = $(this).attr('href').match(/(.*)(episodio(-[0-9]{1,}){1,}-)/)
+              if (search.length >= 2) {
+                search = search[1];
+                var res = AFPremium.functionalities.searchInAnimelist(search, 'link');
+                if (res != false) {
+                  $(this).attr('href', res).addClass('fixed-link-afp');
+                }
+              }
+            })
+          }
+        }, 100)
+      },
+
+      searchInAnimelist: function (what, type_search) {
+        type_search = type_search = undefined ? 'link' : type_search;
+        var animeList = AFPremium.cvar.animeList;
+        for (var index in animeList) {
+          if (animeList[index][type_search].indexOf(what) + 1) {
+            return (animeList[index])[type_search]
+          }
+        }
+        return false
+
       },
       premiumMenu: function () {
         var slug = $('.sortbar-title')

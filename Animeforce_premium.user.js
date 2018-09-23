@@ -7,9 +7,9 @@
 // @include     https://*.animeforce.org/*
 // @homepageURL    https://greasyfork.org/it/scripts/25912-animeforce-premium
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
-// @require http://getbootstrap.com/2.3.2/assets/js/bootstrap-tooltip.js
+// @require https://greasyfork.org/scripts/372499-bootstrap-tooltip-js-v2-3-2/code/bootstrap-tooltipjs%20v232.js?version=631225
 // @require https://greasyfork.org/scripts/26454-jquery-cookie/code/jQuery%20Cookie.user.js
-// @version     2.3.0
+// @version     2.3.2
 // @grant       none
 // @namespace https://greasyfork.org/users/88678
 // @icon           https://www.maxeo.net/imgs/icon/greasyfork/animeforcePremium.png
@@ -194,11 +194,6 @@ function AFP_index() {
                   .attr('style', "position:fixed;right:200vw")
                   .css('display', 'none')
           $('.tp-loader').remove()
-          $('#menu-menu-2').on('mouseover', function () {
-            $('#menu-menu-2 #menu-item-21035 .sub-menu')
-                    .css('display', 'block')
-                    .css('visibility', 'visible')
-          })
           $('#menu-menu-2 a').each(function () {
             $(this).attr('href', $(this).attr('href').replace('//adf.ly/16031519', ''))
           })

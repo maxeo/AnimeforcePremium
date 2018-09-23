@@ -9,7 +9,7 @@
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
 // @require https://greasyfork.org/scripts/372499-bootstrap-tooltip-js-v2-3-2/code/bootstrap-tooltipjs%20v232.js?version=631225
 // @require https://greasyfork.org/scripts/26454-jquery-cookie/code/jQuery%20Cookie.user.js
-// @version     2.3.2
+// @version     2.4.0
 // @grant       none
 // @namespace https://greasyfork.org/users/88678
 // @icon           https://www.maxeo.net/imgs/icon/greasyfork/animeforcePremium.png
@@ -40,6 +40,11 @@ function AFP_index() {
           enable: true,
           title: "Non bloccare AdBlock",
           description: "Su alcune pagine AdBlock non verrà 'bloccato'",
+        },
+        linkDirettoHomePage: {
+          enable: true,
+          title: "Link diretto in HomePage",
+          description: "Nella homepage i link agli episodi saranno diretti <br> PS. Pagine secondarie non ancora supportate",
         },
         miglioraUtilizzoMenu: {
           enable: true,
@@ -138,7 +143,7 @@ function AFP_index() {
       //funzionalità specifiche
       switch (this.getPageType()) {
         case 'home':
-          this.executeFunctionality('addPremiumMenu', 'premiumSearchHomePage');
+          this.executeFunctionality('addPremiumMenu', 'premiumSearchHomePage', 'linkDirettoHomePage');
           break;
         case 'premium-menu':
           this.functionalities.premiumMenu();
@@ -325,6 +330,11 @@ function AFP_index() {
         })
 
 
+      },
+      linkDirettoHomePage: function () {
+        $('.main-loop-inner .panel-wrapper a').each(function () {
+          $(this).attr('href', $(this).attr('href').replace(/episodio(-[0-9]{1,}){1,}-/, ''))
+        })
       },
       premiumMenu: function () {
         var slug = $('.sortbar-title')

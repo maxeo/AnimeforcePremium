@@ -9,7 +9,7 @@
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
 // @require https://greasyfork.org/scripts/372499-bootstrap-tooltip-js-v2-3-2/code/bootstrap-tooltipjs%20v232.js?version=631225
 // @require https://greasyfork.org/scripts/26454-jquery-cookie/code/jQuery%20Cookie.user.js
-// @version     2.4.1
+// @version     2.4.3
 // @grant       none
 // @namespace https://greasyfork.org/users/88678
 // @icon           https://www.maxeo.net/imgs/icon/greasyfork/animeforcePremium.png
@@ -30,6 +30,7 @@ function AFP_index() {
           enable: true,
           title: "Download istantaneo",
           description: "Aggiunge il download istantaneo nella lista degli episodi dell'anime",
+          dependances: ['removeAdflyInPageAnime'],
         },
         decreaseAD: {
           enable: true,
@@ -57,11 +58,6 @@ function AFP_index() {
           title: "Ricerca Anime in homepage",
           description: 'Nella homepage sarà possibile utilizzare il form di ricerca per cercare direttamente dalla lista degli episodi',
           dependances: ['loadAnimeList'],
-        },
-        removeAdflyInPageAnime: {
-          enable: true,
-          title: "Riduci AdFly",
-          description: 'Nella pagina della lista degli episodi non sarà presente il link di Adfly per gli episodi',
         },
         searchInList: {
           enable: true,
@@ -118,9 +114,10 @@ function AFP_index() {
         if (this.menu.functions[arguments[index]].dependances != undefined) {
           var requiredF = this.menu.functions[arguments[index]].dependances;
           for (var subindex in requiredF) {
-            if (dependenceLoaded.indexOf(requiredF[subindex]) + 1) {
+            if (!(dependenceLoaded.indexOf(requiredF[subindex]) + 1)) {
               dependenceLoaded.push(requiredF[subindex])
               this.fComponents[requiredF[subindex]]();
+
             }
           }
         }
@@ -151,7 +148,7 @@ function AFP_index() {
           this.executeFunctionality('addPremiumMenu');
           break;
         case 'episode-list':
-          this.executeFunctionality('addPremiumMenu', 'removeAdflyInPageAnime', 'animeDownloadIstant');
+          this.executeFunctionality('addPremiumMenu', 'animeDownloadIstant');
           break;
         case 'episode-preview':
           this.executeFunctionality('addPremiumMenu');
@@ -251,46 +248,43 @@ function AFP_index() {
       animeDownloadIstant: function () {
         $('body').append('<div class="w8-afp-download" style="position: fixed;right: 0;top: 0;background: rgba(0, 120, 255, 0.63);padding: 18px;z-index: 3000;color: #FFF;font-size: 20px;text-align: right;font-family: Verdana;">Analizzo la pagina per il download diretto.<br>Attendere...</div>')
         if ($('img[src="/DDL/download.png"]').length) {
-          setTimeout(
-                  function () {
-                    var url = 'https:' + $('img[src="/DDL/download.png"]').eq(0).parent().attr('href');
-                    $.get('//url-redirect.maxeo.net/?url=' + encodeURI(url), function (data) {
-                      var filecode = url.match(/\?file=(.*)/)[1];
-                      var longData = data.match(/file=(.*)/)[1].substr();
-                      var basedata = longData.substr(0, longData.indexOf(filecode))
-                      $('img[src="/DDL/download.png"]').each(function () {
-                        url = $(this).parent().attr('href');
-                        var filecode = url.match(/\?file=(.*)/);
-                        if (filecode != null && filecode.length >= 2) {
-                          filecode = filecode[1];
-                          var downloadLink = 'http://' + basedata + filecode;
-                          $(this).parent().attr('href', downloadLink)
-                        } else {
-                          var piano_b = $(this).parents('tr').eq(0).find('td strong').eq(0).html().replace(/ <span.*$/, '').match(/[0-9]*$/);
-                          if (piano_b.length && piano_b[0].length) {
-                            //console.log('PIANO B');
-                            piano_b = piano_b[0] + '';
-                            if (piano_b.length == 1) {
-                              piano_b = '0' + piano_b;
-                            }
-                            var newLong = longData.match(/(.*\_)([0-9]{1,})\_(.*)$/);
-                            var downloadLink = 'http://' + newLong[1] + piano_b + '_' + newLong[3];
-                            $(this).parent().attr('href', downloadLink)
-                          }
+          var animeDownloadIstantInt = setInterval(function () {
+            if (AFPremium.cvar.adflyRemoveUpdated != undefined && AFPremium.cvar.adflyRemoveUpdated == true) {
+              var url = 'https:' + $('img[src="/DDL/download.png"]').eq(0).parent().attr('href');
+              $.get('//url-redirect.maxeo.net/?url=' + encodeURI(url), function (data) {
+                var filecode = url.match(/\?file=(.*)/)[1];
+                var longData = data.match(/file=(.*)/)[1].substr();
+                var basedata = longData.substr(0, longData.indexOf(filecode))
+                $('img[src="/DDL/download.png"]').each(function () {
+                  url = $(this).parent().attr('href');
+                  var filecode = url.match(/\?file=(.*)/);
+                  if (filecode != null && filecode.length >= 2) {
+                    filecode = filecode[1];
+                    var downloadLink = 'http://' + basedata + filecode;
+                    $(this).parent().attr('href', downloadLink)
+                  } else {
+                    var piano_b = $(this).parents('tr').eq(0).find('td strong').eq(0).html().replace(/ <span.*$/, '').match(/[0-9]*$/);
+                    if (piano_b.length && piano_b[0].length) {
+                      //console.log('PIANO B');
+                      piano_b = piano_b[0] + '';
+                      if (piano_b.length == 1) {
+                        piano_b = '0' + piano_b;
+                      }
+                      var newLong = longData.match(/(.*\_)([0-9]{1,})\_(.*)$/);
+                      var downloadLink = 'http://' + newLong[1] + piano_b + '_' + newLong[3];
+                      $(this).parent().attr('href', downloadLink)
+                    }
 
-                        }
-                      })
-                      $('.w8-afp-download').remove();
-                    });
                   }
-          , 3000)
+                })
+                $('.w8-afp-download').remove();
+                clearInterval(animeDownloadIstantInt);
+              });
+            }
+          }
+          , 100)
         }
 
-      },
-      removeAdflyInPageAnime: function () {
-        $.get('#').done(function (data) {
-          $('table[style="width: 100%;"]').html(data.match(/\<table\ style\=\"width\:\ 100\%\;\"\>\n(.*\n)*\<\/tbody\>\n<\/table>/)[0])
-        })
       },
       premiumSearchHomePage: function () {
         var animeList = AFPremium.cvar.animeList;
@@ -333,7 +327,7 @@ function AFP_index() {
 
       },
       linkDirettoHomePage: function () {
-        var linkDirettoInt = setTimeout(function () {
+        var linkDirettoInt = setInterval(function () {
           if (AFPremium.cvar.animeList != undefined) {
             $('.main-loop-inner .panel-wrapper a').each(function () {
               var search = $(this).attr('href').match(/(.*)(episodio(-[0-9]{1,}){1,}-)/)
@@ -345,6 +339,7 @@ function AFP_index() {
                 }
               }
             })
+            clearInterval(linkDirettoInt);
           }
         }, 100)
       },
@@ -441,7 +436,13 @@ function AFP_index() {
           }
           AFPremium.cvar.animeList = animeList;
         })
-      }
+      },
+      removeAdflyInPageAnime: function () {
+        $.get('#').done(function (data) {
+          $('table[style="width: 100%;"]').html(data.match(/\<table\ style\=\"width\:\ 100\%\;\"\>\n(.*\n)*\<\/tbody\>\n<\/table>/)[0])
+          AFPremium.cvar.adflyRemoveUpdated = true
+        })
+      },
     },
     requiredFuntions: {
       /*
@@ -480,7 +481,10 @@ function AFP_index() {
         $.cookie('AFP', JSON.stringify(settings), {expires: 3650, path: '/'});
         AFPremium.cvar.settings = settings;
         for (var index in settings) {
-          AFPremium.menu.functions[index].enable = settings[index];
+          if (AFPremium.menu.functions[index] != undefined) {
+            AFPremium.menu.functions[index].enable = settings[index];
+          }
+
         }
       },
 

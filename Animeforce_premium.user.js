@@ -9,7 +9,7 @@
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
 // @require http://getbootstrap.com/2.3.2/assets/js/bootstrap-tooltip.js
 // @require https://greasyfork.org/scripts/26454-jquery-cookie/code/jQuery%20Cookie.user.js
-// @version     2.2.1
+// @version     2.3.0
 // @grant       none
 // @namespace https://greasyfork.org/users/88678
 // @icon           https://www.maxeo.net/imgs/icon/greasyfork/animeforcePremium.png
@@ -50,8 +50,7 @@ function AFP_index() {
           enable: true,
           title: "Ricerca Anime in homepage",
           description: 'Nella homepage sarà possibile utilizzare il form di ricerca per cercare direttamente dalla lista degli episodi',
-          warning: "Necessario per Altro plugin",
-          frequierd: ['loadAnimeList'],
+          dependances: ['loadAnimeList'],
         },
         removeAdflyInPageAnime: {
           enable: true,
@@ -110,8 +109,8 @@ function AFP_index() {
       var dependenceLoaded = [];
       for (var index in arguments) {
         this.fComponents.loadAnimeList();
-        if (this.menu.functions[arguments[index]].frequierd != undefined) {
-          var requiredF = this.menu.functions[arguments[index]].frequierd;
+        if (this.menu.functions[arguments[index]].dependances != undefined) {
+          var requiredF = this.menu.functions[arguments[index]].dependances;
           for (var subindex in requiredF) {
             if (dependenceLoaded.indexOf(requiredF[subindex]) + 1) {
               dependenceLoaded.push(requiredF[subindex])
@@ -119,7 +118,11 @@ function AFP_index() {
             }
           }
         }
-        this.functionalities[arguments[index]]();
+
+        if (this.menu.functions[arguments[index]].enable) {
+          this.functionalities[arguments[index]]();
+        }
+
       }
     },
     loadFunctionalities: function () {
@@ -339,9 +342,10 @@ function AFP_index() {
 
         /**   Funzionalità da abilitare/disabilitare   **/
         formAFP += "<h2>Funzionalità</h2>"
+        formAFP += '<div class="afp-funct">'
         for (var funxtion_name in docFunction) {
           var labW = docFunction[funxtion_name].warning == undefined ? '' : 'ATTENZIONE: ' + docFunction[funxtion_name].warning;
-          formAFP += '<label style="display: flex"><input style="display:none" type="checkbox"' + (docFunction[funxtion_name].enable ? ' checked=""' : '') +
+          formAFP += '<label style="display: flex"><input name="' + funxtion_name + '" style="display:none" type="checkbox"' + (docFunction[funxtion_name].enable ? ' checked=""' : '') +
                   ' name="' + funxtion_name + '">' + AFPremium.customElements.afphechbox +
                   ' <p data-html="true" data-toggle="tooltip" ' +
                   ' data-title="' + docFunction[funxtion_name].description + '" ' +
@@ -350,6 +354,7 @@ function AFP_index() {
                   docFunction[funxtion_name].title +
                   '</p></label>';
         }
+        formAFP += '</div>'
 
         contentPremium.html(formAFP);
 
@@ -363,7 +368,14 @@ function AFP_index() {
 
         })
 
+        $('.afp-funct input').on('change', function () {
+          AFPremium.updateSettings($(this).attr('name'), $(this).is(':checked'))
+        })
+
+
+
       },
+
     },
     fComponents: {
       loadAnimeList: function () {
@@ -383,12 +395,12 @@ function AFP_index() {
         })
       }
     },
-    /*
-     * Funzione necessaria per ricercare in modo incase sensitive
-     * 
-     */
     requiredFuntions: {
-      icontainsJquery: function () {
+      /*
+       * Funzione necessaria per ricercare in modo incase sensitive
+       * 
+       */
+      icontainsJQuery: function () {
         jQuery.expr[':'].icontains = function (a, i, m) {
           return jQuery(a).text().toUpperCase()
                   .indexOf(m[3].toUpperCase()) >= 0;
@@ -406,14 +418,35 @@ function AFP_index() {
           $.fn.jflickrfeed = function () {};
           $.fn.tabs = function () {};
         })(jQuery);
-      }
+      },
+      loadSettings: function () {
+        var settings = {};
+        if ($.cookie('AFP') != undefined) {
+          settings = JSON.parse($.cookie('AFP'))
+        }
+        for (var index in AFPremium.menu.functions) {
+          if (settings[index] == undefined) {
+            settings[index] = AFPremium.menu.functions[index].enable;
+          }
+        }
+        $.cookie('AFP', JSON.stringify(settings), {expires: 3650, path: '/'});
+        AFPremium.cvar.settings = settings;
+        for (var index in settings) {
+          AFPremium.menu.functions[index].enable = settings[index];
+        }
+      },
 
+    },
+    updateSettings: function (functionality, is_active) {
+      AFPremium.cvar.settings[functionality] = is_active;
+      $.cookie('AFP', JSON.stringify(AFPremium.cvar.settings), {expires: 3650, path: '/'});
+      console.log(AFPremium.cvar.settings[functionality])
     }
 
   };
   AFPremium.loadPageType();
   AFPremium.loadFunctionalities();
-  //jQuery.test = AFPremium;
+  jQuery.test = AFPremium;
 
 }
 

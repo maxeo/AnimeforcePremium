@@ -9,7 +9,7 @@
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
 // @require https://greasyfork.org/scripts/372499-bootstrap-tooltip-js-v2-3-2/code/bootstrap-tooltipjs%20v232.js?version=631225
 // @require https://greasyfork.org/scripts/26454-jquery-cookie/code/jQuery%20Cookie.user.js
-// @version     2.4.3
+// @version     2.4.4
 // @grant       none
 // @namespace https://greasyfork.org/users/88678
 // @icon           https://www.maxeo.net/imgs/icon/greasyfork/animeforcePremium.png
@@ -252,33 +252,35 @@ function AFP_index() {
             if (AFPremium.cvar.adflyRemoveUpdated != undefined && AFPremium.cvar.adflyRemoveUpdated == true) {
               var url = 'https:' + $('img[src="/DDL/download.png"]').eq(0).parent().attr('href');
               $.get('//url-redirect.maxeo.net/?url=' + encodeURI(url), function (data) {
-                var filecode = url.match(/\?file=(.*)/)[1];
-                var longData = data.match(/file=(.*)/)[1].substr();
-                var basedata = longData.substr(0, longData.indexOf(filecode))
-                $('img[src="/DDL/download.png"]').each(function () {
-                  url = $(this).parent().attr('href');
-                  var filecode = url.match(/\?file=(.*)/);
-                  if (filecode != null && filecode.length >= 2) {
-                    filecode = filecode[1];
-                    var downloadLink = 'http://' + basedata + filecode;
-                    $(this).parent().attr('href', downloadLink)
-                  } else {
-                    var piano_b = $(this).parents('tr').eq(0).find('td strong').eq(0).html().replace(/ <span.*$/, '').match(/[0-9]*$/);
-                    if (piano_b.length && piano_b[0].length) {
-                      //console.log('PIANO B');
-                      piano_b = piano_b[0] + '';
-                      if (piano_b.length == 1) {
-                        piano_b = '0' + piano_b;
-                      }
-                      var newLong = longData.match(/(.*\_)([0-9]{1,})\_(.*)$/);
-                      var downloadLink = 'http://' + newLong[1] + piano_b + '_' + newLong[3];
+                if (data.length > 12) {
+                  var filecode = url.match(/\?file=(.*)/)[1];
+                  var longData = data.match(/file=(.*)/)[1].substr();
+                  var basedata = longData.substr(0, longData.indexOf(filecode))
+                  $('img[src="/DDL/download.png"]').each(function () {
+                    url = $(this).parent().attr('href');
+                    var filecode = url.match(/\?file=(.*)/);
+                    if (filecode != null && filecode.length >= 2) {
+                      filecode = filecode[1];
+                      var downloadLink = 'http://' + basedata + filecode;
                       $(this).parent().attr('href', downloadLink)
-                    }
+                    } else {
+                      var piano_b = $(this).parents('tr').eq(0).find('td strong').eq(0).html().replace(/ <span.*$/, '').match(/[0-9]*$/);
+                      if (piano_b.length && piano_b[0].length) {
+                        //console.log('PIANO B');
+                        piano_b = piano_b[0] + '';
+                        if (piano_b.length == 1) {
+                          piano_b = '0' + piano_b;
+                        }
+                        var newLong = longData.match(/(.*\_)([0-9]{1,})\_(.*)$/);
+                        var downloadLink = 'http://' + newLong[1] + piano_b + '_' + newLong[3];
+                        $(this).parent().attr('href', downloadLink)
+                      }
 
-                  }
-                })
-                $('.w8-afp-download').remove();
-                clearInterval(animeDownloadIstantInt);
+                    }
+                  })
+                  $('.w8-afp-download').remove();
+                  clearInterval(animeDownloadIstantInt);
+                }
               });
             }
           }

@@ -333,7 +333,7 @@ function AFP_index() {
           if (AFPremium.cvar.animeList != undefined) {
             $('.main-loop-inner .panel-wrapper a').each(function () {
               var search = $(this).attr('href').match(/(.*)(episodio(-[0-9]{1,}){1,}-)/)
-              if (search.length >= 2) {
+              if (search!=null && search.length >= 2) {
                 search = search[1];
                 var res = AFPremium.functionalities.searchInAnimelist(search, 'link');
                 if (res != false) {

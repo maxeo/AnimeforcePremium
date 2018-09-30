@@ -9,7 +9,7 @@
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
 // @require https://greasyfork.org/scripts/372499-bootstrap-tooltip-js-v2-3-2/code/bootstrap-tooltipjs%20v232.js?version=631225
 // @require https://greasyfork.org/scripts/26454-jquery-cookie/code/jQuery%20Cookie.user.js
-// @version     2.4.4
+// @version     2.4.6
 // @grant       none
 // @namespace https://greasyfork.org/users/88678
 // @icon           https://www.maxeo.net/imgs/icon/greasyfork/animeforcePremium.png
@@ -272,19 +272,25 @@ function AFP_index() {
                           piano_b = '0' + piano_b;
                         }
                         var newLong = longData.match(/(.*\_)([0-9]{1,})\_(.*)$/);
-                        var downloadLink = 'http://' + newLong[1] + piano_b + '_' + newLong[3];
-                        $(this).parent().attr('href', downloadLink)
+                        if (newLong != null) {
+                          var downloadLink = 'http://' + newLong[1] + piano_b + '_' + newLong[3];
+                          $(this).parent().attr('href', downloadLink)
+                        }
+
                       }
 
                     }
                   })
                   $('.w8-afp-download').remove();
-                  clearInterval(animeDownloadIstantInt);
+
                 }
               });
+              clearInterval(animeDownloadIstantInt);
             }
           }
           , 100)
+        } else {
+          $('.w8-afp-download').remove();
         }
 
       },
@@ -333,7 +339,7 @@ function AFP_index() {
           if (AFPremium.cvar.animeList != undefined) {
             $('.main-loop-inner .panel-wrapper a').each(function () {
               var search = $(this).attr('href').match(/(.*)(episodio(-[0-9]{1,}){1,}-)/)
-              if (search!=null && search.length >= 2) {
+              if (search != null && search.length >= 2) {
                 search = search[1];
                 var res = AFPremium.functionalities.searchInAnimelist(search, 'link');
                 if (res != false) {
